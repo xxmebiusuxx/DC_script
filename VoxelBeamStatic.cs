@@ -152,8 +152,10 @@ public class VoxelBeamStatic : MonoBehaviour
 
     public void BeamPosSet()
     {
+        //(ビームがコリジョンと衝突するかどうかの変数)がtrue&&向いてる方向にrayを飛ばしヒット先の情報を格納してる
         if (beamCollides && Physics.Raycast(transform.position, transform.forward, out hit[0]))
            {
+
                end[0] = hit[0].point - (transform.forward * beamEndOffset);
                if(hit[0].collider.tag=="Mirror")
                 {
@@ -166,16 +168,16 @@ public class VoxelBeamStatic : MonoBehaviour
                 }
            } 
            //Checks for collision
-                //end�ϐ��ɏՓ˒n�_(hit.point)����I�u�W�F�N�g�̐��ʃx�N�g���~�r�[���̏I�_����̃I�t�Z�b�g�l�̒l������
-                //���炭Ray�̊J�n�ʒu����I�_�ʒu�������Ōv�Z���Ă���H          
+                //end変数に衝突地点(hit.point)からオブジェクトの正面ベクトル×ビームの終点からのオフセット値の値を引く
+                //恐らくRayの開始位置から終点位置をここで計算している？          
             else{
                 end[0] = transform.position + (transform.forward * beamLength);
                 MirrorCheck=false;
             }
-            line[0].SetPosition(0, transform.position);//�r�[���̊J�n�n�_���`
-            line[0].SetPosition(1, end[0]);//�r�[���̏I���n�_���`
+            line[0].SetPosition(0, transform.position);//ビームのレンダラーの開始をここで配列に入れる
+            line[0].SetPosition(1, end[0]);//ビームのレンダラーの終点をここで配列にいれる
             
-            if (beamStart)//�r�[���̔��˃G�t�F�N�g�̏ꏊ�ƌ���������
+            if (beamStart)//最初のビームの位置
             {
                 beamStart.transform.position = transform.position;
                 beamStart.transform.LookAt(end[0]);
@@ -188,13 +190,14 @@ public class VoxelBeamStatic : MonoBehaviour
 
     public void ReflectBeamPosSet()
     {
+        //(ビームがコリジョンと衝突するかどうかの変数)がtrue&&向いてる方向にrayを飛ばしヒット先の情報を格納してる
          if (beamCollides && Physics.Raycast(transform.position, transform.forward, out hit[1])) //Checks for collision beamCollides(�r�[�����R���W�����ƏՓ˂��邩�ǂ����̕ϐ�)��true&&�����Ă������ray���΂��q�b�g��̏����i�[���Ă�
              {
                  
-                 reflectDir[0] = Vector3.Reflect(transform.forward, hit[1].normal);//ray�𔽎˂������x�N�g�����v�Z���i�[
-                 if (Physics.Raycast(hit[1].point, reflectDir[0], out reflectHit[0]))//ray���J�n�n�_����I�_�܂Ŕ�΂��Ă���
+                 reflectDir[0] = Vector3.Reflect(transform.forward, hit[1].normal);
+                 if (Physics.Raycast(hit[1].point, reflectDir[0], out reflectHit[0]))//rayを反射させたベクトルを計算し格納
                  {
-                    end[1] = reflectHit[0].point - (reflectDir[0] * beamEndOffset);//��΂���ray�̏��i�[
+                    end[1] = reflectHit[0].point - (reflectDir[0] * beamEndOffset);//飛ばしたRayの情報格納
                  }
                   else
                    end[1] = transform.position + (transform.forward * beamLength);
@@ -298,8 +301,8 @@ public class VoxelBeamStatic : MonoBehaviour
                     }
                 else
                     {
-                        line[p-1].SetPosition(0,end[p-2]);//���ˌ�̃r�[���̊J�n�n�_���`
-                        line[p-1].SetPosition(1,end[p-1]);//���ˌ�̃r�[���̏I���n�_���`
+                        line[p-1].SetPosition(0,end[p-2]);//反射ビーム[p-1]の開始地点の情報格納
+                        line[p-1].SetPosition(1,end[p-1]);//反射ビーム[p-1]の終了地点の情報格納
                         if (beamEnd)
                           {
                           beamEnd.transform.position = end[p-1];
@@ -310,14 +313,14 @@ public class VoxelBeamStatic : MonoBehaviour
             }
             else
                 {
-                 line[p-1].SetPosition(0,new Vector3(0f,0f,0f));//���˂��Ȃ��ꍇ��2�{�ڂ̃r�[���̊J�n�n�_���`
-                  line[p-1].SetPosition(1,new Vector3(0f,0f,0f));//���˂��Ȃ��ꍇ��2�{�ڂ̃r�[���̏I���n�_���`
+                 line[p-1].SetPosition(0,new Vector3(0f,0f,0f));//レーザーが鏡に当たっていないときの反射レーザーの位置格納処理 
+                  line[p-1].SetPosition(1,new Vector3(0f,0f,0f));//レーザーが鏡に当たっていないときの反射レーザーの位置格納処理 
                 }
              if(hit1st==true)
                 {//
                  
-                  line[p-1].SetPosition(0,new Vector3(0f,0f,0f));//���˂��Ȃ��ꍇ��2�{�ڂ̃r�[���̊J�n�n�_���`
-                  line[p-1].SetPosition(1,new Vector3(0f,0f,0f));//���˂��Ȃ��ꍇ��2�{�ڂ̃r�[���̏I���n�_���`
+                  line[p-1].SetPosition(0,new Vector3(0f,0f,0f));//レーザーが鏡に当たっていないときの反射レーザーの位置格納処理
+                  line[p-1].SetPosition(1,new Vector3(0f,0f,0f));//レーザーが鏡に当たっていないときの反射レーザーの位置格納処理
                   if (beamEnd)
                  {
                   beamEnd.transform.position = end[0];
